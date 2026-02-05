@@ -1,0 +1,51 @@
+spring:
+  ## Kafka ##
+  kafka:
+    bootstrap-servers: kafka:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      retries: 5
+    consumer:
+      group-id: station-tracker-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "com.stationTracker.model,com.stationTracker.dto"
+
+  ## Database ##
+  datasource:
+    url: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    hikari:
+      connection-timeout: 30000
+      initialization-fail-timeout: 60000
+
+  ## Hot reloading of templates ##
+  thymeleaf:
+    cache: false # Disables caching so changes to HTML are picked up instantly
+
+    web:
+      resources:
+        static-locations: file:src/main/resources/static/, classpath:/static/
+        cache:
+          period: 0 # Disables caching for JS and CSS files
+
+    devtools:
+      restart:
+        # Exclude static assets from triggering a full Java application restart
+        exclude: static/**, public/**, templates/**, **/*.html, **/*.js, **/*.css
+      livereload:
+        enabled: true # Enables the LiveReload server to notify your browser of changes
+
+## Actuator ##
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: always

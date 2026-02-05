@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Station Tracker - Lyon Part-Dieu</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        #map { height: 100vh; width: 100%; }
+        .pulse-animation {
+            animation: pulse-red 1s infinite;
+        }
+        @keyframes pulse-red {
+            0% { stroke-width: 2; stroke-opacity: 1; }
+            100% { stroke-width: 15; stroke-opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+<div id="status-box" style="position: absolute; bottom: 20px; left: 20px; z-index: 1000; background: white; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
+    <div>DB: <span id="db-status">test⚪</span></div>
+    <div>Kafka: <span id="kafka-status">⚪</span></div>
+</div>
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="/js/map.js"></script>
+</body>
+</html>
