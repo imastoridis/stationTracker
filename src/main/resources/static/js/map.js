@@ -1,13 +1,15 @@
-// Initialize map at Lyon Part-Dieu
-const lyonCoords = [45.7606, 4.8599];
+
+/* Init */
+// Initialization of map at Lyon Part-Dieu
+const lyonCoords = [45.76071664220606, 4.858701048532883];
 const map = L.map('map').setView(lyonCoords, 15);
 
-// Add OpenRailwayMap tiles
+// OpenRailwayMap tiles
 L.tileLayer('https://{s}.tiles.openrailwaymap.org/standard/{z}/{x}/{y}.png', {
     attribution: '© OpenRailwayMap contributors'
 }).addTo(map);
 
-// Add a circle marker that we can change color
+// A circle marker to display density
 let stationMarker = L.circleMarker(lyonCoords, {
     radius: 20,
     fillColor: "#28a745", // Default Green (LOW)
@@ -17,14 +19,17 @@ let stationMarker = L.circleMarker(lyonCoords, {
     fillOpacity: 0.8
 }).addTo(map).bindPopup("<b>Lyon Part-Dieu</b><br>Density: <span id='density-val'>LOW</span>");
 
-// Connect to the Spring Boot SSE Stream
+/* Connection to api */
+// Connection to the Spring Boot SSE Stream
 const eventSource = new EventSource('/api/density/stream');
 
+// update map on response
 eventSource.onmessage = (event) => {
     const density = event.data;
     updateMapUI(density);
 };
 
+/* Map update */
 function updateMapUI(level) {
     const colors = {
         'LOW': '#28a745',      // Green
@@ -39,7 +44,7 @@ function updateMapUI(level) {
     stationMarker.setStyle({ fillColor: newColor });
     document.getElementById('density-val').innerText = level;
 
-    // Add a pulse effect if CRITICAL
+    // Pulse effect if CRITICAL
     if (level === 'CRITICAL') {
         stationMarker.getElement().classList.add('pulse-animation');
     } else {
@@ -47,19 +52,41 @@ function updateMapUI(level) {
     }
 }
 
+/* s the health of the system every 60 seconds*/
 function checkSystemHealth() {
     fetch('/api/system/status')
         .then(response => response.json())
         .then(data => {
-            document.getElementById('db-status').innerText = data.database === 'UP' ? '🟢' : '🔴';
-            document.getElementById('kafka-status').innerText = data.kafka === 'UP' ? '🟢' : '🔴';
-        })
+        console.log(data)
+        const db_icon = document.getElementById('db-status-icon');
+        const kafka_icon = document.getElementById('kafka-status-icon');
+        const db_text = document.getElementById('db-status-text');
+        const kafka_text = document.getElementById('kafka-status-text');
+
+        if (data.database === 'UP') {
+            db_icon.className = 'fa-solid fa-circle'; // Solid green-ish check
+            db_icon.style.color = '#2ecc71';
+            db_text.innerText = '';
+        } else {
+            db_icon.className = 'fa-solid fa-circle'; // Solid red-ish X
+            db_icon.style.color = '#e74c3c';
+            db_text.innerText = '';
+        }
+
+        if (data.kafka === 'UP') {
+            kafka_icon.className = 'fa-solid fa-circle'; // Solid green-ish check
+            kafka_icon.style.color = '#2ecc71';
+            kafka_text.innerText = '';
+        } else {
+            kafka_icon.className = 'fa-solid fa-circle'; // Solid red-ish X
+            kafka_icon.style.color = '#e74c3c';
+            kafka_text.innerText = '';
+        }
+    })
         .catch(() => {
-            document.getElementById('db-status').innerText = '🔴';
-            document.getElementById('kafka-status').innerText = '🔴';
-        });
+    });
 }
 
-// Check every 10 seconds
+// Check health every 60 seconds
 setInterval(checkSystemHealth, 10000);
-checkSystemHealth(); // Initial check
+checkSystemHealth();

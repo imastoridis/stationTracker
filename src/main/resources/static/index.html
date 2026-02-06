@@ -2,7 +2,11 @@
 <html>
 <head>
     <title>Station Tracker - Lyon Part-Dieu</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="icon" type="image/x-icon" href="/assets/train-solid-full.ico">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+          integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <style>
         #map { height: 100vh; width: 100%; }
         .pulse-animation {
@@ -15,9 +19,16 @@
     </style>
 </head>
 <body>
-<div id="status-box" style="position: absolute; bottom: 20px; left: 20px; z-index: 1000; background: white; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
-    <div>DB: <span id="db-status">test⚪</span></div>
-    <div>Kafka: <span id="kafka-status">⚪</span></div>
+<div id="status-box"
+     style="position: absolute; bottom: 20px; left: 20px; z-index: 1000; background: white; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
+    <div id="db-status-container">
+        DB: <i id="db-status-icon" class="fa-solid fa-circle-question"></i>
+        <span id="db-status-text">Checking...</span>
+    </div>
+    <div id="kafka-status-container">
+        Kafka: <i id="kafka-status-icon" class="fa-solid fa-circle-question"></i>
+        <span id="kafka-status-text">Checking...</span>
+    </div>
 </div>
 <div id="map"></div>
 

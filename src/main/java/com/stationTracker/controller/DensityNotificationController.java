@@ -13,7 +13,7 @@ public class DensityNotificationController {
 
     @GetMapping("/stream")
     public SseEmitter stream() {
-        return emitters.add(new SseEmitter(60 * 1000L)); // 1 minute timeout
+        return emitters.add(new SseEmitter(3600 * 1000L));
     }
 
     // Call this from your Consumer

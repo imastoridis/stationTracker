@@ -2,7 +2,6 @@ package com.stationTracker.controller;
 
 import org.springframework.boot.actuate.health.HealthComponent;
 import org.springframework.boot.actuate.health.HealthEndpoint;
-import org.springframework.boot.actuate.health.Status;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -14,7 +13,6 @@ public class HealthController {
 
     private final HealthEndpoint healthEndpoint;
 
-    // Spring will automatically inject the HealthEndpoint bean
     public HealthController(HealthEndpoint healthEndpoint) {
         this.healthEndpoint = healthEndpoint;
     }
@@ -27,7 +25,8 @@ public class HealthController {
         return Map.of(
                 "overall", overallHealth.getStatus().getCode(),
                 "database", getComponentStatus("db"),
-                "kafka", getComponentStatus("kafka")
+                "kafka", getComponentStatus("kafka"),
+                "binders", getComponentStatus("binders")
         );
     }
 
@@ -36,5 +35,11 @@ public class HealthController {
         return Optional.ofNullable(healthEndpoint.healthForPath(componentName))
                 .map(c -> c.getStatus().getCode())
                 .orElse("UNKNOWN");
+    }
+
+    @GetMapping("/api/system/debug")
+    public Object debugHealth() {
+        // This will show you exactly what keys are available in the registry
+        return healthEndpoint.health();
     }
 }

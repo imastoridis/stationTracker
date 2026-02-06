@@ -10,6 +10,14 @@ public class SseEmitters {
 
     public SseEmitter add(SseEmitter emitter) {
         this.emitters.add(emitter);
+
+        // Send an immediate empty event to "warm up" the connection
+        try {
+            emitter.send(SseEmitter.event().name("INIT").data("Connected"));
+        } catch (IOException e) {
+            emitter.complete();
+        }
+
         emitter.onCompletion(() -> this.emitters.remove(emitter));
         emitter.onTimeout(() -> this.emitters.remove(emitter));
         return emitter;
@@ -18,8 +26,12 @@ public class SseEmitters {
     public void send(Object data) {
         for (SseEmitter emitter : emitters) {
             try {
+                // Explicitly use the 'data' and a media type to ensure the browser
+                // doesn't think the connection is interrupted.
                 emitter.send(data);
-            } catch (IOException e) {
+            } catch (Exception e) {
+                // If we catch an error, we MUST call complete() before removing
+                emitter.complete();
                 emitters.remove(emitter);
             }
         }

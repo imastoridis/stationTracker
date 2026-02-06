@@ -1,0 +1,20 @@
+# Ignore the heavy build artifacts
+target/
+*.jar
+*.war
+
+# Ignore hidden IDE settings and git history
+.git/
+.idea/
+*.iml
+.vscode/
+.settings/
+.classpath
+.project
+
+# Ignore local logs and docker files
+*.log
+docker-compose.yml
+.env
+Dockerfile
+Jenkinsfile

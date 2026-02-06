@@ -22,7 +22,6 @@ public class DensityConsumerService {
     @KafkaListener(topics = "train-arrivals", groupId = "station-tracker-group")
     public void consumeArrival(TrainArrivalEvent event) {
         log.info("Received arrival: {}", event.getTrainId());
-
         // 1. Map DTO to Entity and Save
         TrainArrival arrival = new TrainArrival();
         arrival.setTrainNumber(event.getTrainId());
@@ -48,6 +47,6 @@ public class DensityConsumerService {
         if (count > 8) return "CRITICAL";
         if (count > 5) return "HIGH";
         if (count > 2) return "MEDIUM";
-        return "LOW";
+        return "LOWS";
     }
 }
