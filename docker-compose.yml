@@ -47,6 +47,7 @@ services:
       - "5006:5005"
       - "35729:35729"
     environment:
+      TZ: Europe/Paris
       JAVA_OPTS: -Xmx512m -Xms256m
       SPRING_DEVTOOLS_RESTART_ENABLED: true
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}

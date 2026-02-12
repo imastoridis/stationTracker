@@ -15,13 +15,19 @@ spring:
       properties:
         spring.json.trusted.packages: "com.stationTracker.model,com.stationTracker.dto"
         spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer
-        spring.json.value.default.type: com.stationTracker.dto.TrainArrivalEvent
+        spring.json.value.default.type: com.stationTracker.dto.arrival.TrainArrivalEvent
     admin:
       properties:
         bootstrap.servers: kafka:9092
         request.timeout.ms: 5000
         default.api.timeout.ms: 5000
       fail-fast: false
+
+## Sncf API
+  sncf:
+    api:
+      url: https://api.sncf.com/v1/coverage/sncf/stop_areas/stop_area:SNCF:87722025/arrivals
+      key: ${SNCF_API_KEY}
 
   ## Database ##
   datasource:

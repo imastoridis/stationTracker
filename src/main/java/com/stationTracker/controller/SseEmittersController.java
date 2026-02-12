@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class SseEmitters {
+public class SseEmittersController {
     private final List<SseEmitter> emitters = new CopyOnWriteArrayList<>();
 
     public SseEmitter add(SseEmitter emitter) {

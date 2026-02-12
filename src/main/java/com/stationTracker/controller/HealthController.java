@@ -25,8 +25,7 @@ public class HealthController {
         return Map.of(
                 "overall", overallHealth.getStatus().getCode(),
                 "database", getComponentStatus("db"),
-                "kafka", getComponentStatus("kafka"),
-                "binders", getComponentStatus("binders")
+                "kafka", getComponentStatus("kafka")
         );
     }
 

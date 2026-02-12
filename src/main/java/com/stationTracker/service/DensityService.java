@@ -1,7 +1,6 @@
 package com.stationTracker.service;
 
-import com.stationTracker.dto.TrainArrivalEvent;
-import com.stationTracker.model.TrainArrival;
+import com.stationTracker.dto.arrival.TrainArrivalEvent;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 

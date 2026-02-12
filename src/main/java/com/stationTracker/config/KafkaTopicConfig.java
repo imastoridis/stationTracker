@@ -15,4 +15,12 @@ public class KafkaTopicConfig {
                 .replicas(1)
                 .build();
     }
+
+    @Bean
+    public NewTopic departuresTopic() {
+        return TopicBuilder.name("train-departures")
+                .partitions(3)
+                .replicas(1)
+                .build();
+    }
 }

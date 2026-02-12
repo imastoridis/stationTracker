@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Data
-public class TrainArrival {
+public class TrainDeparture {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -19,11 +19,11 @@ public class TrainArrival {
 
     private String trainNumber;
 
-    private String origin;
+    private String destination;
 
     private String platform;
 
-    private LocalDateTime scheduledArrivalTime;
+    private LocalDateTime scheduledDepartureTime;
 
     private int delayInMinutes;
 }
