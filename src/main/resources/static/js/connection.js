@@ -1,26 +1,22 @@
 /* Connection to api */
-let sseConnection = null; // Global reference to manage the lifecycle
+let sseConnection = null;
 
 /* Fetching of data*/
 function connectToStream() {
 
     if (sseConnection) sseConnection.close();
+
     sseConnection = new EventSource('/api/stream');
 
     // Standard message listener for updates
     sseConnection.onmessage = (event) => {
-        const status = JSON.parse(event.data);
+        let status = JSON.parse(event.data);
         console.log("Status Update:", status);
 
-        //Update status
+        // Update
+        updateMapUIDeparture(status.departingTrains);
+        updateMapUIArrival(status.upcomingTrains);
         updateDensityAndCount(status);
-
-        //Update trains
-        if (status.upcomingTrains != null){
-            updateMapUIArrival(status.upcomingTrains);
-        } else {
-            updateMapUIDeparture(status.departingTrains);
-        }
     };
 
     sseConnection.onerror = () => {

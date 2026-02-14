@@ -1,4 +1,4 @@
-package com.stationTracker.mapper;
+package com.stationTracker.mapper.departure;
 
 import com.stationTracker.dto.departure.TrainDepartureEvent;
 import org.springframework.stereotype.Component;
@@ -40,6 +40,10 @@ public class DeparturesMapper {
         return (Map<String, Object>) body.get("stop_date_time");
     }
 
+    @SuppressWarnings("unchecked")
+    private List<Map<String, Object>> getLinks(Map<String, Object> body) {
+        return (List<Map<String, Object>>) body.get("links");
+    }
     /*
      * DTO Mapping Logic
      * */
@@ -50,6 +54,7 @@ public class DeparturesMapper {
         // Train departures
         List<Map<String, Object>> departures = getDeparturesList(body);
 
+        // Loop departures and extract data
         for (Map<String, Object> departure : departures) {
             try {
                 TrainDepartureEvent event = new TrainDepartureEvent();
@@ -59,6 +64,7 @@ public class DeparturesMapper {
                 Map<String, Object> route = getRoute(departure);
                 Map<String, Object> direction = getDirection(route);
                 Map<String, Object> stopDateTime = getStopDateTime(departure);
+                List<Map<String, Object>> links = getLinks(departure);
 
                 // Train number
                 event.setTrainNumber((String) displayInfo.get("headsign"));
@@ -66,8 +72,15 @@ public class DeparturesMapper {
                 // Direction
                 event.setDestination((String) direction.get("name"));
 
-                // Train Id
+                // Train ID
                 event.setTrainId((String) route.get("id"));
+
+                // Journey ID
+                for (Map<String, Object> link : links) {
+                    if ("vehicle_journey".equals(link.get("type"))) {
+                        event.setJourneyId((String) link.get("id"));
+                    }
+                }
 
                 // Departure Time and Calculate Delay
                 String rawDeparture = (String) stopDateTime.get("departure_date_time");
@@ -90,6 +103,4 @@ public class DeparturesMapper {
         }
         return events;
     }
-
-
 }

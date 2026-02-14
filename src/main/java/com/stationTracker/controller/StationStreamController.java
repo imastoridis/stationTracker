@@ -1,8 +1,8 @@
 package com.stationTracker.controller;
 
 import com.stationTracker.dto.StationStatusUpdate;
-import com.stationTracker.service.producer.SncfArrivalProducer;
-import com.stationTracker.service.producer.SncfDepartureProducer;
+import com.stationTracker.service.producer.ArrivalProducer;
+import com.stationTracker.service.producer.DepartureProducer;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,12 +15,12 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 public class StationStreamController {
 
     private final SseEmittersController emitters = new SseEmittersController();
-    private final SncfArrivalProducer sncfArrivalProducer;
-    private final SncfDepartureProducer sncfDepartureProducer;
+    private final ArrivalProducer arrivalProducer;
+    private final DepartureProducer departureProducer;
 
-    public StationStreamController(SncfArrivalProducer sncfArrivalProducer, SncfDepartureProducer sncfDepartureProducer) {
-        this.sncfArrivalProducer = sncfArrivalProducer;
-        this.sncfDepartureProducer = sncfDepartureProducer;
+    public StationStreamController(ArrivalProducer arrivalProducer, DepartureProducer departureProducer) {
+        this.arrivalProducer = arrivalProducer;
+        this.departureProducer = departureProducer;
     }
 
     /* Broadcast to front using the emitters */
@@ -39,14 +39,14 @@ public class StationStreamController {
     @PostMapping("/trigger-fetch/arrivals")
     @SuppressWarnings("unused")
     public ResponseEntity<String> manualTriggerArrivals() {
-        sncfArrivalProducer.produceData();
+        arrivalProducer.produceDataArrivals();
         return ResponseEntity.ok("Fetch arrivals triggered successfully");
     }
 
     @PostMapping("/trigger-fetch/departures")
     @SuppressWarnings("unused")
     public ResponseEntity<String> manualTriggerDepartures() {
-        sncfDepartureProducer.produceData();
+        departureProducer.produceDataDepartures();
         return ResponseEntity.ok("Fetch departures triggered successfully");
     }
 }

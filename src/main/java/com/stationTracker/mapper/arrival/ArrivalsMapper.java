@@ -1,4 +1,4 @@
-package com.stationTracker.mapper;
+package com.stationTracker.mapper.arrival;
 
 import com.stationTracker.dto.arrival.TrainArrivalEvent;
 import org.springframework.stereotype.Component;
@@ -44,6 +44,9 @@ public class ArrivalsMapper {
         return (Map<String, Object>) body.get("stop_point");
     }
 
+    private List<Map<String, Object>> getLinks(Map<String, Object> body) {
+        return (List<Map<String, Object>>) body.get("links");
+    }
 
 
     /*
@@ -65,6 +68,7 @@ public class ArrivalsMapper {
                 Map<String, Object> route = getRoute(arrival);
                 Map<String, Object> direction = getDirection(route);
                 Map<String, Object> stopDateTime = getStopDateTime(arrival);
+                List<Map<String, Object>> links = getLinks(arrival);
 
                 // Train number
                 event.setTrainNumber((String) displayInfo.get("headsign"));
@@ -74,6 +78,13 @@ public class ArrivalsMapper {
 
                 // Train Id
                 event.setTrainId((String) route.get("id"));
+
+                // Journey Id
+                for (Map<String, Object> link : links) {
+                    if ("vehicle_journey".equals(link.get("type"))) {
+                        event.setJourneyId((String) link.get("id"));
+                    }
+                }
 
                 // Arrival Time and Calculate Delay
                 String rawArrival = (String) stopDateTime.get("arrival_date_time");

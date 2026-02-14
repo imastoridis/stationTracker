@@ -5,10 +5,20 @@ let renderClock = function (){
 renderClock()
 setInterval(renderClock, 1000)
 
+/* Train icon/markers */
+var trainIcon = L.icon({
+    iconUrl: '/assets/train-solid-full.png',
+    iconSize:     [38, 38], // size of the icon
+    shadowSize:   [50, 64], // size of the shadow
+    iconAnchor: [16, 16]
+});
+let trainMarkers = L.layerGroup().addTo(map);
 
 /**
  * Map update
  */
+this.trainCountDepartures = 0
+this.trainCountArrivals = 0
 
 /* Update density*/
 function updateDensityAndCount(status){
@@ -29,34 +39,24 @@ function updateDensityAndCount(status){
     document.getElementById('density-val-icon').style.color = newColor
 
     /* Update train count*/
-    document.getElementById('train-count').innerText = status.trainCount;
+    document.getElementById('train-count').innerText = +trainCountArrivals + +trainCountDepartures;
 }
 
 /**
 * Update train arrivals and departures
 */
-var trainIcon = L.icon({
-    iconUrl: '/assets/train-solid-full.png',
-    iconSize:     [38, 95], // size of the icon
-    shadowSize:   [50, 64], // size of the shadow
-    /* iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
-     shadowAnchor: [4, 62],  // the same for the shadow
-     popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor*/
-});
 
 /* Update arrivals*/
 function updateMapUIArrival(upcomingTrains) {
     document.getElementById("arriving-trains").innerHTML = ''
+    this.trainCountArrivals = Object.keys(upcomingTrains).length
+
+    // Clear previous positions
+    trainMarkers.clearLayers();
 
     upcomingTrains.forEach(train => {
         // Update coords if exist
-        if (train.latitude && train.longitude) {
-            L.marker([train.latitude, train.longitude], {
-                icon: trainIcon
-            })
-                .addTo(map)
-                .bindPopup(`Train ${train.trainNumber} is here!`);
-        }
+        this.updateTrainPositions(train)
 
         // Update template
         const delayHtml = train.delay !== 0
@@ -80,20 +80,16 @@ function updateMapUIArrival(upcomingTrains) {
 
         document.getElementById("arriving-trains").innerHTML += templateHtml
     })
-
 }
 
 /* Update departures*/
 function updateMapUIDeparture(departingTrains) {
+    document.getElementById("departing-trains").innerHTML = ''
+    this.trainCountDepartures = Object.keys(departingTrains).length
+
     departingTrains.forEach(train => {
         //Update coords
-        if (train.latitude && train.longitude) {
-            L.marker([train.latitude, train.longitude], {
-                icon: trainIcon
-            })
-                .addTo(map)
-                .bindPopup(`Train ${train.trainNumber} is here!`);
-        }
+        //this.updateTrainPositions(train)
 
         // Update template
         const delayHtmlDeparture = train.delay !== 0
@@ -107,7 +103,7 @@ function updateMapUIDeparture(departingTrains) {
 
         const templateHtmlDeparture =   `
                 <div class="d-flex flex-column">
-                    <span><em>From :</em> <span class="fw-bold">${train.destination.replace(/ *\([^)]*\) */g, "")}</span></span>
+                    <span><em>Destination :</em> <span class="fw-bold">${train.destination.replace(/ *\([^)]*\) */g, "")}</span></span>
                     <span><em>Train number :</em> ${train.trainNumber}</span>
                     <span>${timeHtmlDeparture}</span>
                     <span>${delayHtmlDeparture}</span>
@@ -118,4 +114,17 @@ function updateMapUIDeparture(departingTrains) {
         document.getElementById("departing-trains").innerHTML += templateHtmlDeparture
     })
 
+}
+
+/* Update train positions*/
+function updateTrainPositions(train) {
+    if (train.latitude && train.longitude) {
+        const marker = L.marker([train.latitude, train.longitude], {icon: trainIcon})
+            .addTo(map)
+            .bindPopup(`<b>Train: ${train.trainNumber}</b><br>
+                        Origin: ${train.origin}<br>
+                        Arrival: ${ moment(train.arrivalTime).add(train.delay, "minutes").format("h:mm:ss a")}<br>
+                        Delay: ${train.delay} min`);
+        trainMarkers.addLayer(marker);
+    }
 }

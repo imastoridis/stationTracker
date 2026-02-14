@@ -16,44 +16,44 @@
 </head>
 <body>
 
-<div class="home_container">
+<div class="home_container ">
     <!-- Left side-->
     <section class="info_section d-flex flex-column align-items-center justify-content-between">
         <!-- DateTime-->
         <div class="card w-90">
-            <div class="card-body d-flex justify-content-center p-10" style="background-color: aliceblue">
+            <div class="card-body d-flex justify-content-center p-10 color_green_deep text_white">
                 <h4 id="date" style="margin-bottom:0"></h4>
             </div>
         </div>
 
         <!-- STATION/STATUS INFO-->
-        <div class="d-flex gap-15 w-100">
+        <div class="d-flex gap-15 w-100 ">
             <!-- Station info -->
-            <div class="card w-100">
-                <div class="card-body d-flex flex-column">
-                    <div class="d-flex align-items-center gap-2 ">
+            <div class="card w-100 color_green_light text_green_deep">
+                <div class="card-body d-flex flex-column gap-10 ">
+                    <div>
                         <h5>Lyon Part Dieu - SNCF Station</h5>
+                        <hr/>
                     </div>
-                    <hr/>
 
                     <div>
-                        <span class="text_blue">Number of trains:</span>
+                        <span >Number of trains:</span>
                         <span id="train-count" class="fw-bold"></span>
                     </div>
                     <div>
-                        <span class="text_blue">Station density: </span>
+                        <span >Station density: </span>
                         <span id="density-val" class="fw-bold"></span>
                         <i id="density-val-icon" class="fa-solid fa-circle"></i>
                     </div>
                     <div>
-                        <span class="text_blue" id="updated-at">Updated at: </span>
+                        <span id="updated-at">Updated at: </span>
                     </div>
                 </div>
             </div>
 
             <!-- Status info-->
-            <div class="card w-100">
-                <div class="card-body d-flex flex-column gap-10">
+            <div class="card w-100 color_green_light text_green_deep">
+                <div class="card-body d-flex flex-column gap-10 ">
                     <div>
                         <h5> Connections Status</h5>
                         <hr/>
@@ -78,9 +78,9 @@
         </div>
 
         <!-- TRAIN INFO-->
-        <div class="d-flex align-items-center justify-content-between h-100 w-100 gap-15">
+        <div class="d-flex align-items-center justify-content-between h-100 w-100 gap-15 text_green_deep">
             <!-- Arriving Train info -->
-            <div class="info_section_left card h-100 w-50" style="overflow-y: scroll;">
+            <div class="info_section_left card h-100 w-50 color_green_light " style="overflow-y: scroll;">
                 <div class="card-body d-flex flex-column">
                     <div class="d-flex align-items-center gap-2 ">
                         <h5>Train Arrivals</h5>
@@ -95,7 +95,7 @@
 
             <!-- Departing Train info -->
             <div class="info_section_right  h-100  w-50 card " style="overflow-y: scroll;height:inherit">
-                <div class="card-body d-flex flex-column">
+                <div class="card-body d-flex flex-column color_green_light">
                     <div class="d-flex align-items-center gap-2 ">
                         <h5>Train Departures</h5>
                         <em class="h6 em"> (Next 30 minutes)</em>

@@ -26,4 +26,8 @@ public class TrainArrival {
     private LocalDateTime scheduledArrivalTime;
 
     private int delayInMinutes;
+
+    private Double latitude;
+
+    private Double longitude;
 }
