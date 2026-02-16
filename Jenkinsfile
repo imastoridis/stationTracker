@@ -32,10 +32,10 @@ pipeline {
                         # 1. Log in to GitHub Container Registry
                         echo $GHCR_TOKEN | docker login ghcr.io -u $GHCR_USER --password-stdin
 
-                        # 2. Build the image [cite: 4]
+                        # 2. Build the image
                         docker build -t ${DOCKER_REGISTRY}/${IMAGE_NAME}:latest .
 
-                        # 3. Push the image [cite: 5]
+                        # 3. Push the image
                         docker push ${DOCKER_REGISTRY}/${IMAGE_NAME}:latest
                     '''
                 }
@@ -49,8 +49,8 @@ pipeline {
                         ssh -o StrictHostKeyChecking=accept-new root@77.42.32.210 "
                             export SNCF_API_KEY=$SNCF_API_KEY && \
                             cd /var/www/stationTracker && \
-                            docker compose pull && \
-                            docker compose up -d
+                            docker compose pull app && \
+                            docker compose up -d postgres kafka app
                         "
                     '''
                 }

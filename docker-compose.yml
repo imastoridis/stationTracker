@@ -38,9 +38,10 @@ services:
 
 ## Application ##
   app:
-    build:
-      context: .
+    #build:
+     # context: .
       #target: build
+    image: ghcr.io/imastoridis/station-tracker-app:latest
     container_name: station-tracker-app
     ports:
       - "8080:8080"
