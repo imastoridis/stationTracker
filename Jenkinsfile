@@ -10,11 +10,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                // This explicitly pulls the latest code from the specified branch
-                checkout([$class: 'GitSCM',
-                    branches: [[name: '*/main']], // Change 'main' to your branch name
-                    userRemoteConfigs: [[url: 'git@github.com:imastoridis/stationTracker.git']] // Use your repo URL
-                ])
+                git branch: 'master', url: 'git@github.com:imastoridis/stationTracker.git', credentialsId: 'github-ssh-key' // Ensure you have SSH credentials configured in Jenkins
             }
         }
 
