@@ -13,7 +13,7 @@ pipeline {
                 // This explicitly pulls the latest code from the specified branch
                 checkout([$class: 'GitSCM',
                     branches: [[name: '*/main']], // Change 'main' to your branch name
-                    userRemoteConfigs: [[url: 'git@github.com:imastoridis/station-tracker-app.git']] // Use your repo URL
+                    userRemoteConfigs: [[url: 'git@github.com:imastoridis/stationTracker.git']] // Use your repo URL
                 ])
             }
         }
