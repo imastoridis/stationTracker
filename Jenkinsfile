@@ -21,22 +21,39 @@ pipeline {
                 sh './mvnw clean package -DskipTests'
             }
         }
+
         stage('Docker Build & Push') {
             steps {
-                withDockerRegistry(credentialsId: 'ghcr-credentials', url: 'https://ghcr.io') {
-                    sh "docker build -t ${DOCKER_REGISTRY}/${IMAGE_NAME}:latest ."
-                    sh "docker push ${DOCKER_REGISTRY}/${IMAGE_NAME}:latest"
+                // This pulls your GHCR username and token/password into variables
+                withCredentials([usernamePassword(credentialsId: 'ghcr-credentials',
+                                                  passwordVariable: 'GHCR_TOKEN',
+                                                  usernameVariable: 'GHCR_USER')]) {
+                    sh '''
+                        # 1. Log in to GitHub Container Registry
+                        echo $GHCR_TOKEN | docker login ghcr.io -u $GHCR_USER --password-stdin
+
+                        # 2. Build the image [cite: 4]
+                        docker build -t ${DOCKER_REGISTRY}/${IMAGE_NAME}:latest .
+
+                        # 3. Push the image [cite: 5]
+                        docker push ${DOCKER_REGISTRY}/${IMAGE_NAME}:latest
+                    '''
                 }
             }
         }
+
         stage('Deploy') {
             steps {
-                // We pass the secret directly into the compose environment
-                sh """
-                export SNCF_API_KEY=${SNCF_API_KEY}
-                docker compose pull app
-                docker compose up -d app
-                """
+                sshagent(['hetzner-server-ssh-key']) {
+                    sh """
+                        ssh root@77.42.32.210 "
+                            export SNCF_API_KEY=${SNCF_API_KEY}
+                            cd /path/to/your/app && \
+                            docker compose pull app && \
+                            docker compose up -d app
+                        "
+                    """
+                }
             }
         }
     }
