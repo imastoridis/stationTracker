@@ -9,7 +9,9 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'master', url: 'git@github.com:imastoridis/stationTracker.git', credentialsId: 'github-ssh-key'
+                git branch: 'main',
+                    url: 'https://github.com/imastoridis/stationTracker.git',
+                    credentialsId: 'ghcr-credentials'
             }
         }
 
