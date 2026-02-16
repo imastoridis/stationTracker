@@ -1,58 +1,43 @@
 pipeline {
     agent any
-
     environment {
-        // Define names for your docker image
-        DOCKER_IMAGE = "station-tracker-app"
-        REGISTRY_TAG = "${env.BUILD_NUMBER}"
+        // Use your actual GitHub username here
+        DOCKER_REGISTRY = "ghcr.io/imastoridis"
+        IMAGE_NAME = "station-tracker-app"
+        // Pulls the secret from Jenkins Credentials store
+        SNCF_API_KEY = credentials('SNCF_API_KEY')
     }
-
     stages {
-        stage('Checkout') {
+        stage('Test Connection') {
             steps {
-                // Jenkins automatically checks out code from your linked Git repo
-                echo 'Checking out source code...'
-            }
-        }
-
-        stage('Maven Build & Test') {
-            steps {
-                // We use the Maven wrapper to ensure environment consistency
-                sh './mvnw clean verify'
-            }
-            post {
-                success {
-                    // Archive the test results in Jenkins UI
-                    junit '**/target/surefire-reports/*.xml'
+                sshagent(['hetzner-server-ssh-key']) {
+                    sh 'ssh -o StrictHostKeyChecking=no root@77.42.32.210 "hostname"'
                 }
             }
         }
 
-        stage('Docker Build') {
+        stage('Maven Build') {
             steps {
-                echo "Building Docker Image: ${DOCKER_IMAGE}:${REGISTRY_TAG}"
-                // Build the image using the Dockerfile in the root
-                sh "docker build -t ${DOCKER_IMAGE}:${REGISTRY_TAG} ."
-                sh "docker tag ${DOCKER_IMAGE}:${REGISTRY_TAG} ${DOCKER_IMAGE}:latest"
+                sh './mvnw clean package -DskipTests'
             }
         }
-
-        stage('Deploy (Local Dev)') {
+        stage('Docker Build & Push') {
             steps {
-                echo 'Restarting containers with new image...'
-                // This restarts only the app service using the newly built image
-                sh 'docker-compose up -d --no-deps app'
+                withDockerRegistry(credentialsId: 'ghcr-credentials', url: 'https://ghcr.io') {
+                    sh "docker build -t ${DOCKER_REGISTRY}/${IMAGE_NAME}:latest ."
+                    sh "docker push ${DOCKER_REGISTRY}/${IMAGE_NAME}:latest"
+                }
             }
         }
-    }
-
-    post {
-        always {
-            echo 'Cleaning up workspace...'
-            // Optional: remove old build artifacts to save disk space
-        }
-        failure {
-            echo 'Pipeline failed! Check the logs.'
+        stage('Deploy') {
+            steps {
+                // We pass the secret directly into the compose environment
+                sh """
+                export SNCF_API_KEY=${SNCF_API_KEY}
+                docker compose pull app
+                docker compose up -d app
+                """
+            }
         }
     }
 }

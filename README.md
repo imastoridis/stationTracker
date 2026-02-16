@@ -14,7 +14,7 @@ You can test the application live here: https://imastoridis.com/station-tracker/
 - Java 21
 - Spring Boot
 - Spring RestTemplate
-- Spring WebSocket (STOMP)
+- Spring WebSocket
 - Maven
 - Docker
 - Jenkins
@@ -32,17 +32,17 @@ You can test the application live here: https://imastoridis.com/station-tracker/
 The project follows a Producer-Consumer pattern using Apache Kafka.
 ### 1. The Data Ingestion (Producers)
 
-   Generic Hierarchy: A base Producer<T, B> class handles the heavy lifting: SNCF Authentication, API fetching, and GPS interpolation for calculating live train positions.
+**<em>Generic Hierarchy</em>**: A base Producer<T, B> class handles the heavy lifting: SNCF Authentication, API fetching, and GPS interpolation for calculating live train positions.
 
-   Coordinate Interpolation: Using the vehicle_journeys endpoint, the app calculates the approximate position of a train between two stops based on the current time and the scheduled stop times.
+**<em>Coordinate Interpolation</em>**: Using the vehicle_journeys endpoint, the app calculates the approximate position of a train between two stops based on the current time and the scheduled stop times.
 
-   Batching: Data is sent to Kafka as a BatchEvent to minimize network overhead.
+**<em>Batching</em>**: Data is sent to Kafka as a BatchEvent to minimize network overhead.
 
 ### 2. The Processing Engine (Consumers)
 
-   Consumers wait for all kafka tasks to complete before broadcasting updates to the UI.
+Consumers wait for all kafka tasks to complete before broadcasting updates to the UI.
 
-   "Last One Out" Logic: When multiple Kafka topics (arrivals/departures) receive updates simultaneously, the system tracks active tasks. Only the final consumer to finish its database work triggers the WebSocket broadcast to the UI.
+Last One Out Logic: When multiple Kafka topics (arrivals/departures) receive updates simultaneously, the system tracks active tasks. Only the final consumer to finish its database work triggers the WebSocket broadcast to the UI.
 
 ### 3. The Real-Time UI (WebSockets)
 
