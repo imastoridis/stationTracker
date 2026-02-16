@@ -51,15 +51,28 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                sshagent(['hetzner-server-ssh-key']) {
-                    sh '''
-                        ssh -o StrictHostKeyChecking=accept-new root@77.42.32.210 "
-                            export SNCF_API_KEY=$SNCF_API_KEY && \
-                            cd /var/www/stationTracker && \
-                            docker compose pull app && \
-                            docker compose up -d postgres kafka app
-                        "
-                    '''
+                // We need these credentials to log in on the remote server
+                withCredentials([usernamePassword(credentialsId: 'ghcr-credentials',
+                                                  passwordVariable: 'GHCR_TOKEN',
+                                                  usernameVariable: 'GHCR_USER')]) {
+                    sshagent(['hetzner-server-ssh-key']) {
+                        sh '''
+                            # 1. Sync the docker-compose.yml to the server first
+                            scp -o StrictHostKeyChecking=accept-new docker-compose.yml root@77.42.32.210:/var/www/stationTracker/docker-compose.yml
+
+                            # 2. Run the deployment commands on the server
+                            ssh -o StrictHostKeyChecking=accept-new root@77.42.32.210 "
+                                # Login to GHCR on the remote machine
+                                echo $GHCR_TOKEN | docker login ghcr.io -u $GHCR_USER --password-stdin && \
+
+                                cd /var/www/stationTracker && \
+                                export SNCF_API_KEY=$SNCF_API_KEY && \
+
+                                docker compose pull app && \
+                                docker compose up -d postgres kafka app
+                            "
+                        '''
+                    }
                 }
             }
         }
