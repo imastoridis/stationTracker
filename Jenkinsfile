@@ -45,15 +45,14 @@ pipeline {
         stage('Deploy') {
             steps {
                 sshagent(['hetzner-server-ssh-key']) {
-                    sh """
+                    sh '''
                         ssh -o StrictHostKeyChecking=accept-new root@77.42.32.210 "
-                            cd /path/to/your/app && \
-                            # Create/update a .env file so docker-compose can see the variables
-                            echo 'SNCF_API_KEY=${SNCF_API_KEY}' > .env && \
+                            export SNCF_API_KEY=$SNCF_API_KEY && \
+                            cd /var/www/stationTracker && \
                             docker compose pull && \
                             docker compose up -d
                         "
-                    """
+                    '''
                 }
             }
         }
