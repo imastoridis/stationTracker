@@ -8,6 +8,16 @@ pipeline {
         SNCF_API_KEY = credentials('SNCF_API_KEY')
     }
     stages {
+        stage('Checkout') {
+            steps {
+                // This explicitly pulls the latest code from the specified branch
+                checkout([$class: 'GitSCM',
+                    branches: [[name: '*/main']], // Change 'main' to your branch name
+                    userRemoteConfigs: [[url: 'git@github.com:imastoridis/station-tracker-app.git']] // Use your repo URL
+                ])
+            }
+        }
+
         stage('Test Connection') {
             steps {
                 sshagent(['hetzner-server-ssh-key']) {
