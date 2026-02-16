@@ -69,3 +69,38 @@ services:
         condition: service_healthy
       kafka:
         condition: service_healthy
+
+
+  app-dev:
+    build:
+      context: .
+      target: build
+      dockerfile: Dockerfile.dev
+    container_name: station-tracker-app
+    ports:
+      - "8080:8080"
+      - "5006:5005"
+      - "35729:35729"
+    environment:
+      TZ: Europe/Paris
+      JAVA_OPTS: -Xmx512m -Xms256m
+      SPRING_DEVTOOLS_RESTART_ENABLED: true
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SNCF_API_KEY: ${SNCF_API_KEY}
+      SERVER_SERVLET_CONTEXT_PATH: /stationTracker
+      #JAVA_TOOL_OPTIONS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
+    volumes:
+      - .:/app
+      - ~/.m2:/root/.m2
+    command: >
+      ./mvnw spring-boot:run
+      -Dspring-boot.run.jvmArguments="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
