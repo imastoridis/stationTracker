@@ -59,9 +59,9 @@ services:
       SNCF_API_KEY: ${SNCF_API_KEY}
       SERVER_SERVLET_CONTEXT_PATH: /stationTracker
       #JAVA_TOOL_OPTIONS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
-    command: >
-      ./mvnw spring-boot:run
-      -Dspring-boot.run.jvmArguments="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
+    #command: >
+    #  ./mvnw spring-boot:run
+    #  -Dspring-boot.run.jvmArguments="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
     depends_on:
       postgres:
         condition: service_healthy
