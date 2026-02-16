@@ -1,20 +1,9 @@
-# Stage 1: Build the application
-FROM maven:3.9.5-eclipse-temurin-21 AS build
-WORKDIR /app
-COPY . .
-# Copy pom.xml and source code
-#COPY pom.xml .
-#COPY src ./src
-# Build the JAR, skipping tests for speed
-#RUN mvn clean package -DskipTests
-
-# Stage 2: Runtime
-# Use the lightweight JRE for running the app
+# Use only the runtime stage since Jenkins already built the JAR
 FROM eclipse-temurin:21-jre-jammy
 
 WORKDIR /app
 
-# Copy the JAR that was already built by Jenkins in the 'Maven Build' stage
+# Copy the JAR directly from the Jenkins workspace target folder
 COPY target/*.jar app.jar
 
 EXPOSE 8080

@@ -46,10 +46,10 @@ pipeline {
             steps {
                 sshagent(['hetzner-server-ssh-key']) {
                     sh """
-                        # Log into the remote server and run the commands there
                         ssh -o StrictHostKeyChecking=accept-new root@77.42.32.210 "
-                            export SNCF_API_KEY=${SNCF_API_KEY}
                             cd /path/to/your/app && \
+                            # Create/update a .env file so docker-compose can see the variables
+                            echo 'SNCF_API_KEY=${SNCF_API_KEY}' > .env && \
                             docker compose pull && \
                             docker compose up -d
                         "

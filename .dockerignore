@@ -1,5 +1,5 @@
 # Ignore the heavy build artifacts
-target/
+#target/
 *.jar
 *.war
 

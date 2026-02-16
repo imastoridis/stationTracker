@@ -40,7 +40,7 @@ services:
   app:
     build:
       context: .
-      target: build
+      #target: build
     container_name: station-tracker-app
     ports:
       - "8080:8080"
@@ -76,9 +76,9 @@ services:
       context: .
       target: build
       dockerfile: Dockerfile.dev
-    container_name: station-tracker-app
+    container_name: station-tracker-app-dev
     ports:
-      - "8080:8080"
+      - "8083:8080"
       - "5006:5005"
       - "35729:35729"
     environment:
