@@ -10,7 +10,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'master', url: 'git@github.com:imastoridis/stationTracker.git', credentialsId: 'github-ssh-key' // Ensure you have SSH credentials configured in Jenkins
+                git branch: 'master', url: 'git@github.com:imastoridis/stationTracker.git', credentialsId: 'hetzner-server-ssh-key'
             }
         }
 
