@@ -1,7 +1,6 @@
 pipeline {
     agent any
     environment {
-        // Use your actual GitHub username here
         DOCKER_REGISTRY = "ghcr.io/imastoridis"
         IMAGE_NAME = "station-tracker-app"
         // Pulls the secret from Jenkins Credentials store
@@ -10,7 +9,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'master', url: 'git@github.com:imastoridis/stationTracker.git', credentialsId: 'hetzner-server-ssh-key'
+                git branch: 'master', url: 'git@github.com:imastoridis/stationTracker.git', credentialsId: 'github-ssh-key'
             }
         }
 
