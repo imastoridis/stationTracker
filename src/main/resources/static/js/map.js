@@ -7,11 +7,12 @@ L.tileLayer('https://{s}.tiles.openrailwaymap.org/standard/{z}/{x}/{y}.png', {
     attribution: '© OpenRailwayMap contributors'
 }).addTo(map);
 
-
-/* Manual event trigger*/
 async function triggerManualFetch() {
+    const isProduction = window.location.hostname === 'imastoridis.com';
+    const API_BASE_URL = getUrls(isProduction)
+
     try {
-        const response = await fetch('/api/trigger-fetch/arrivals', {
+        const response = await fetch(API_BASE_URL + '/trigger-fetch/arrivals', {
             method: 'POST'
         });
 
@@ -20,7 +21,7 @@ async function triggerManualFetch() {
     }
 
     try {
-        const response = await fetch('/api/trigger-fetch/departures', {
+        const response = await fetch(API_BASE_URL + '/trigger-fetch/departures', {
             method: 'POST'
         });
     } catch (error) {
