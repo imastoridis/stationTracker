@@ -7,7 +7,7 @@ setInterval(renderClock, 1000)
 
 /* Train icon/markers */
 var trainIcon = L.icon({
-    iconUrl: '/assets/train-solid-full.png',
+    iconUrl: './assets/train-solid-full.png',
     iconSize:     [38, 38], // size of the icon
     shadowSize:   [50, 64], // size of the shadow
     iconAnchor: [16, 16]

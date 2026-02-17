@@ -6,7 +6,7 @@ function connectToStream() {
 
     if (sseConnection) sseConnection.close();
 
-    sseConnection = new EventSource('/api/stream');
+    sseConnection = new EventSource('api/stream');
 
     // Standard message listener for updates
     sseConnection.onmessage = (event) => {

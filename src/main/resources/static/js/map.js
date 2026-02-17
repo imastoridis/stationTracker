@@ -11,7 +11,7 @@ L.tileLayer('https://{s}.tiles.openrailwaymap.org/standard/{z}/{x}/{y}.png', {
 /* Manual event trigger*/
 async function triggerManualFetch() {
     try {
-        const response = await fetch('/api/trigger-fetch/arrivals', {
+        const response = await fetch('api/trigger-fetch/arrivals', {
             method: 'POST'
         });
 
@@ -20,7 +20,7 @@ async function triggerManualFetch() {
     }
 
     try {
-        const response = await fetch('/api/trigger-fetch/departures', {
+        const response = await fetch('api/trigger-fetch/departures', {
             method: 'POST'
         });
     } catch (error) {

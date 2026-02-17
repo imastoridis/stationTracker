@@ -1,6 +1,6 @@
 /* s the health of the system every 60 seconds*/
 function checkSystemHealth() {
-    fetch('/api/system/status')
+    fetch('api/system/status')
         .then(response => response.json())
         .then(data => {
         const db_icon = document.getElementById('db-status-icon');
