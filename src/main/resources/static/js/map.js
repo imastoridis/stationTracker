@@ -1,3 +1,11 @@
+// Define your base URLs
+function getUrl(isProduction){
+    const API_BASE_URL = isProduction
+        ? '/stationTracker/'
+        : '/';
+    return API_BASE_URL
+}
+
 // Initialization of map at Lyon Part-Dieu
 const lyonCoords = [45.76071664220606, 4.858701048532883];
 const map = L.map('map-container').setView(lyonCoords, 11);
