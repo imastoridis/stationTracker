@@ -32,7 +32,17 @@ public class StationStreamController {
     @GetMapping("/stream")
     @SuppressWarnings("unused")
     public SseEmitter stream() {
-        return emitters.add(new SseEmitter(1800 * 1000L));
+        //Create the emitter when someone connects
+        boolean isFirstClient = !emitters.hasActiveClients();
+        SseEmitter emitter = emitters.add(new SseEmitter(1800 * 1000L));
+
+        if (isFirstClient) {
+            // Trigger an immediate fetch so the first user doesn't see a blank map
+            arrivalProducer.produceDataArrivals();
+            departureProducer.produceDataDepartures();
+        }
+
+        return emitter;
     }
 
     /* Fetch the data manually*/

@@ -6,7 +6,7 @@ The system calculates real-time station density and interpolates train coordinat
 
 ## Testing the application
 
-You can test the application live here: https://imastoridis.com/station-tracker/
+You can test the application live here: https://imastoridis.com/stationTracker/
 
 ## Technology stack
 
@@ -81,7 +81,7 @@ POSTGRES_DB=station_db
 ### 3. Run the application. 
 Run the following command from the root of the project:
 
-` docker-compose up`
+` docker-compose up app-dev`
 
-The application will be available at http://localhost:8080/index.html
+The application will be available at http://localhost:8080/stationTracker
 
