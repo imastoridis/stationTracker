@@ -5,6 +5,7 @@ function getUrl(isProduction){
         : '/';
     return API_BASE_URL
 }
+const API_BASE_URL = getUrl(isProduction)
 
 /* Connection to api */
 let sseConnection = null;
@@ -15,7 +16,6 @@ function connectToStream() {
     if (sseConnection) sseConnection.close();
     // Determine environment based on the browser's current URL
     var isProduction = window.location.hostname === 'imastoridis.com';
-    const API_BASE_URL = getUrl(isProduction)
 
     sseConnection = new EventSource(API_BASE_URL + 'api/stream');
     // Standard message listener for updates

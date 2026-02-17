@@ -1,6 +1,9 @@
+//Get environment
+const API_BASE_URL = getUrls(isProduction)
+
 /* s the health of the system every 60 seconds*/
 function checkSystemHealth() {
-    fetch('/api/system/status')
+    fetch(API_BASE_URL + 'api/system/status')
         .then(response => response.json())
         .then(data => {
         const db_icon = document.getElementById('db-status-icon');
@@ -33,5 +36,5 @@ function checkSystemHealth() {
 }
 
 // Check health every 60 seconds
-setInterval(checkSystemHealth, 10000);
+setInterval(checkSystemHealth, 100000);
 checkSystemHealth();

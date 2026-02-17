@@ -1,10 +1,5 @@
-// Define your base URLs
-function getUrl(isProduction){
-    const API_BASE_URL = isProduction
-        ? '/stationTracker/'
-        : '/';
-    return API_BASE_URL
-}
+//Get environment
+const API_BASE_URL = getUrls(isProduction)
 
 // Initialization of map at Lyon Part-Dieu
 const lyonCoords = [45.76071664220606, 4.858701048532883];
@@ -17,7 +12,6 @@ L.tileLayer('https://{s}.tiles.openrailwaymap.org/standard/{z}/{x}/{y}.png', {
 
 async function triggerManualFetch() {
     const isProduction = window.location.hostname === 'imastoridis.com';
-    const API_BASE_URL = getUrls(isProduction)
 
     try {
         const response = await fetch(API_BASE_URL + 'api/trigger-fetch/arrivals', {
