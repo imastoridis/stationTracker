@@ -1,6 +1,3 @@
-//Get environment
-const API_BASE_URL = getUrls(isProduction)
-
 // Initialization of map at Lyon Part-Dieu
 const lyonCoords = [45.76071664220606, 4.858701048532883];
 const map = L.map('map-container').setView(lyonCoords, 11);
@@ -10,11 +7,11 @@ L.tileLayer('https://{s}.tiles.openrailwaymap.org/standard/{z}/{x}/{y}.png', {
     attribution: '© OpenRailwayMap contributors'
 }).addTo(map);
 
-async function triggerManualFetch() {
-    const isProduction = window.location.hostname === 'imastoridis.com';
 
+/* Manual event trigger*/
+async function triggerManualFetch() {
     try {
-        const response = await fetch(API_BASE_URL + 'api/trigger-fetch/arrivals', {
+        const response = await fetch('/api/trigger-fetch/arrivals', {
             method: 'POST'
         });
 
@@ -23,7 +20,7 @@ async function triggerManualFetch() {
     }
 
     try {
-        const response = await fetch(API_BASE_URL + 'api/trigger-fetch/departures', {
+        const response = await fetch('/api/trigger-fetch/departures', {
             method: 'POST'
         });
     } catch (error) {

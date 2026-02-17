@@ -1,12 +1,3 @@
-// Define your base URLs
-function getUrl(isProduction){
-    const API_BASE_URL = isProduction
-        ? '/stationTracker/'
-        : '/';
-    return API_BASE_URL
-}
-const API_BASE_URL = getUrl(isProduction)
-
 /* Connection to api */
 let sseConnection = null;
 
@@ -14,10 +5,9 @@ let sseConnection = null;
 function connectToStream() {
 
     if (sseConnection) sseConnection.close();
-    // Determine environment based on the browser's current URL
-    var isProduction = window.location.hostname === 'imastoridis.com';
 
-    sseConnection = new EventSource(API_BASE_URL + 'api/stream');
+    sseConnection = new EventSource('/api/stream');
+
     // Standard message listener for updates
     sseConnection.onmessage = (event) => {
         let status = JSON.parse(event.data);
