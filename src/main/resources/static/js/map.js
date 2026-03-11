@@ -10,6 +10,7 @@ L.tileLayer('https://{s}.tiles.openrailwaymap.org/standard/{z}/{x}/{y}.png', {
 
 /* Manual event trigger*/
 async function triggerManualFetch() {
+    document.getElementsByClassName("spinner_icon")[0].style.display = "inline-block";
     try {
         const response = await fetch('api/trigger-fetch/arrivals', {
             method: 'POST'

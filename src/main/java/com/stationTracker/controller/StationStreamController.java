@@ -10,17 +10,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.util.concurrent.CompletableFuture;
+
 @RestController
 @RequestMapping("/api")
 public class StationStreamController {
 
-    private final SseEmittersController emitters = new SseEmittersController();
+    private final SseEmittersController emitters;
     private final ArrivalProducer arrivalProducer;
     private final DepartureProducer departureProducer;
 
-    public StationStreamController(ArrivalProducer arrivalProducer, DepartureProducer departureProducer) {
+    public StationStreamController(ArrivalProducer arrivalProducer, DepartureProducer departureProducer, SseEmittersController emitters) {
         this.arrivalProducer = arrivalProducer;
         this.departureProducer = departureProducer;
+        this.emitters = emitters;
     }
 
     /* Broadcast to front using the emitters */
@@ -34,15 +37,18 @@ public class StationStreamController {
     public SseEmitter stream() {
         //Create the emitter when someone connects
         boolean isFirstClient = !emitters.hasActiveClients();
-        SseEmitter emitter = emitters.add(new SseEmitter(1800 * 1000L));
 
         if (isFirstClient) {
             // Trigger an immediate fetch so the first user doesn't see a blank map
-            arrivalProducer.produceDataArrivals();
-            departureProducer.produceDataDepartures();
+            /*arrivalProducer.produceDataArrivals();
+            departureProducer.produceDataDepartures();*/
+            CompletableFuture.runAsync(() -> {
+                arrivalProducer.produceDataArrivals();
+                departureProducer.produceDataDepartures();
+            });
         }
 
-        return emitter;
+        return emitters.add(new SseEmitter(1800 * 1000L));
     }
 
     /* Fetch the data manually*/

@@ -17,6 +17,8 @@ function connectToStream() {
         updateMapUIDeparture(status.departingTrains);
         updateMapUIArrival(status.upcomingTrains);
         updateDensityAndCount(status);
+
+        document.getElementsByClassName("spinner_icon")[0].style.display = "none";
     };
 
     sseConnection.onerror = () => {
