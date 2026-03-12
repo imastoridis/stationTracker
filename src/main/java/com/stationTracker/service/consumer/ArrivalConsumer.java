@@ -34,9 +34,16 @@ public class ArrivalConsumer extends Consumer<TrainArrival, TrainArrivalEvent> {
     @KafkaListener(topics = "train-arrivals", groupId = "station-tracker-arrivals")
     @Transactional
     public void consumeArrival(TrainArrivalBatchEvent batch) {
+        // Calculate Latency
+        long endToEndLatency = System.currentTimeMillis() - batch.getTimestamp();
+        
         executeSynchronized(() -> {
             List<TrainArrival> entities = synchronizeDatabase(batch.getArrivals());
             repository.saveAll(entities);
+
+            // Enhanced logging
+            log.info("[PERF] Batch of {} arrivals processed. End-to-End Latency: {}ms",
+                    batch.getArrivals().size(), endToEndLatency);
 
             logBatchMetrics("ARRIVAL", batch.getArrivals().size());
         });

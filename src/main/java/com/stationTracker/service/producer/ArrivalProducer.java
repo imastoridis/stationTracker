@@ -30,7 +30,7 @@ public class ArrivalProducer extends Producer<TrainArrivalEvent, TrainArrivalBat
      * Main scheduled task that orchestrates the fetch and produce cycle
      * Fetches the arrivals and coordinates of each train
      */
-    @Scheduled(fixedRate = 60000) // Poll every 60 seconds
+    @Scheduled(fixedRate = 30000) // Poll every 60 seconds
     public void produceDataArrivals() {
         try {
             // Check if there are any active clients
@@ -44,10 +44,14 @@ public class ArrivalProducer extends Producer<TrainArrivalEvent, TrainArrivalBat
             Map<String, Object> rawData = fetchRawApiData(SNCF_API_URL_ARRIVALS + "?datetime=" + now, entity);
             List<TrainArrivalEvent> events = arrivalsMapper.mapResponseToDto(rawData);
 
+            long startTime = System.currentTimeMillis();
             // Fetches coordinates
             for (TrainArrivalEvent event : events) {
                 fetchCoordinates(entity, event);
             }
+
+            long duration = System.currentTimeMillis() - startTime;
+            System.out.println("[PERF] Coordinate fetch for " + events.size() + " trains took: " + duration + "ms");
 
             // Send to kafka
             kafkaTemplate.send("train-arrivals", "SNCF_BATCH_ARRIVALS", new TrainArrivalBatchEvent(events));

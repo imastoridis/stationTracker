@@ -21,8 +21,15 @@ function connectToStream() {
         document.getElementsByClassName("spinner_icon")[0].style.display = "none";
     };
 
-    sseConnection.onerror = () => {
-        console.error("SSE Connection failed.");
+    sseConnection.onerror = (err) => {
+        // 2 means the connection is permanently closed
+        if (err.target.readyState === EventSource.CLOSED) {
+            console.error("SSE Connection was closed by the server.");
+        } else if (err.target.readyState === EventSource.CONNECTING) {
+            console.log("SSE is attempting to reconnect...");
+        } else {
+            console.error("An SSE error occurred.", err);
+        }
         sseConnection.close();
     };
 }

@@ -40,8 +40,6 @@ public class StationStreamController {
 
         if (isFirstClient) {
             // Trigger an immediate fetch so the first user doesn't see a blank map
-            /*arrivalProducer.produceDataArrivals();
-            departureProducer.produceDataDepartures();*/
             CompletableFuture.runAsync(() -> {
                 arrivalProducer.produceDataArrivals();
                 departureProducer.produceDataDepartures();
