@@ -9,6 +9,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -32,6 +33,8 @@ public class DepartureProducer extends Producer<TrainDepartureEvent, TrainDepart
      */
     @Scheduled(fixedRate = 60000) // Poll every 60 seconds
     public void produceDataDepartures() {
+        List<TrainDepartureEvent> events = new ArrayList<>();
+
         try {
             // Check if there are any active clients
             if (!sseEmittersController.hasActiveClients()) {
@@ -40,12 +43,19 @@ public class DepartureProducer extends Producer<TrainDepartureEvent, TrainDepart
             HttpEntity<String> entity = setBasicAuth();
 
             // Fetches data
-            Map<String, Object> rawData = fetchRawApiData(SNCF_API_URL_DEPARTURES + "?datetime=" + now, entity);
-            List<TrainDepartureEvent> events = departuresMapper.mapResponseToDto(rawData);
+            try {
+                Map<String, Object> rawData = fetchRawApiData(SNCF_API_URL_DEPARTURES + "?datetime=" + now, entity);
+                events = departuresMapper.mapResponseToDto(rawData);
 
-            // Fetches coordinates
-            for (TrainDepartureEvent event : events) {
-                fetchCoordinates(entity, event);
+                for (TrainDepartureEvent event : events) {
+                    fetchCoordinates(entity, event);
+                }
+            } catch (Exception apiException) {
+                if (apiException.getMessage().contains("404")) {
+                    System.out.println("No departures found for the current time. Sending empty batch.");
+                } else {
+                    throw apiException; // Re-throw if it's a real error (like 500 or Auth)
+                }
             }
 
             // Send to kafka

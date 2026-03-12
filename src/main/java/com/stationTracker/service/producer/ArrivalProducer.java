@@ -9,6 +9,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -32,6 +33,8 @@ public class ArrivalProducer extends Producer<TrainArrivalEvent, TrainArrivalBat
      */
     @Scheduled(fixedRate = 30000) // Poll every 60 seconds
     public void produceDataArrivals() {
+        List<TrainArrivalEvent> events = new ArrayList<>();
+
         try {
             // Check if there are any active clients
             if (!sseEmittersController.hasActiveClients()) {
@@ -41,17 +44,25 @@ public class ArrivalProducer extends Producer<TrainArrivalEvent, TrainArrivalBat
             HttpEntity<String> entity = setBasicAuth();
 
             // Fetches data
-            Map<String, Object> rawData = fetchRawApiData(SNCF_API_URL_ARRIVALS + "?datetime=" + now, entity);
-            List<TrainArrivalEvent> events = arrivalsMapper.mapResponseToDto(rawData);
+            try {
+                Map<String, Object> rawData = fetchRawApiData(SNCF_API_URL_ARRIVALS + "?datetime=" + now, entity);
+                events = arrivalsMapper.mapResponseToDto(rawData);
 
-            long startTime = System.currentTimeMillis();
-            // Fetches coordinates
-            for (TrainArrivalEvent event : events) {
-                fetchCoordinates(entity, event);
+                // Fetches coordinates
+                long startTime = System.currentTimeMillis();
+                for (TrainArrivalEvent event : events) {
+                    fetchCoordinates(entity, event);
+                }
+                long duration = System.currentTimeMillis() - startTime;
+                System.out.println("[PERF] Coordinate fetch for " + events.size() + " trains took: " + duration + "ms");
+
+            } catch (Exception apiException) {
+                if (apiException.getMessage().contains("404")) {
+                    System.out.println("No arrivals found for the current time. Sending empty batch.");
+                } else {
+                    throw apiException; // Re-throw if it's a real error (like 500 or Auth)
+                }
             }
-
-            long duration = System.currentTimeMillis() - startTime;
-            System.out.println("[PERF] Coordinate fetch for " + events.size() + " trains took: " + duration + "ms");
 
             // Send to kafka
             kafkaTemplate.send("train-arrivals", "SNCF_BATCH_ARRIVALS", new TrainArrivalBatchEvent(events));
